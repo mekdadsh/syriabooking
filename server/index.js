@@ -64,7 +64,14 @@ app.use((err, req, res, next) => {
   });
 }); 
 const PORT = process.env.PORT || 8800;
+
+// Start the server
 app.listen(PORT, () => {
-  connect();
   console.log(`Connected to backend on port ${PORT}.`);
+});
+
+// Connect to MongoDB after server starts
+connect().catch(err => {
+  console.error("Failed to connect to MongoDB:", err);
+  // Don't exit the process, let the server run without DB
 });
