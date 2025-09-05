@@ -18,7 +18,10 @@ const verifyToken = (req, res, next) => {
 };
 const verifyUser = (req, res, next) => {
   verifyToken(req, res, () => {
-    if (req.user.id === req.params.userId || req.user.isAdmin) {
+    // Check if user is accessing their own data or is admin
+    // Handle both :userId and :id parameters
+    const targetUserId = req.params.userId || req.params.id;
+    if (req.user.id === targetUserId || req.user.isAdmin) {
       req.userId = req.user.id; // Make user ID easily accessible
       next();
     } else {
