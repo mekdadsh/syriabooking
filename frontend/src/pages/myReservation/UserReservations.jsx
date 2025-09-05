@@ -22,9 +22,7 @@ const ReservationPage = () => {
  const handleCancel = async (reservationId) => {
   try {
     await axios.delete(`${API_BASE_URL}/reservations/${reservationId}`, {
-      headers: {
-        Authorization: `Bearer ${user.token}`,
-      },
+      withCredentials: true
     });
     reFetch();
   } catch (err) {

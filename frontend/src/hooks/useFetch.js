@@ -1,6 +1,7 @@
 // Updated useFetch.js
 import { useEffect, useState } from "react";
-import axiosInstance from "../utils/axiosConfig";
+import axios from "axios";
+import API_BASE_URL from "../config";
 
 const useFetch = (url) => {
   const [data, setData] = useState([]);
@@ -11,7 +12,9 @@ const useFetch = (url) => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const res = await axiosInstance.get(url);
+        const res = await axios.get(`${API_BASE_URL}${url}`, {
+          withCredentials: true // This sends cookies
+        });
         setData(res.data);
       } catch (err) {
         setError(err);
@@ -24,7 +27,9 @@ const useFetch = (url) => {
   const reFetch = async () => {
     setLoading(true);
     try {
-      const res = await axiosInstance.get(url);
+      const res = await axios.get(`${API_BASE_URL}${url}`, {
+        withCredentials: true
+      });
       setData(res.data);
     } catch (err) {
       setError(err);
