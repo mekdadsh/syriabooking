@@ -6,8 +6,7 @@ import useFetch from "../../hooks/useFetch";
 import { useContext, useState } from "react";
 import { SearchContext } from "../../context/SearchContext";
 import { AuthContext } from "../../context/AuthContext";
-import axios from "axios";
-import API_BASE_URL from "../../config";
+import axiosInstance from "../../utils/axiosConfig";
 import { useNavigate } from "react-router-dom";
 
 const Reserve = ({ setOpen, hotelId }) => {
@@ -69,14 +68,21 @@ const [selectedExtras, setSelectedExtras] = useState([]);
         ? [...selectedRooms, value]
         : selectedRooms.filter((item) => item !== value)
     );
-  };const handleClick = async () => {
-  try {
+  };  const handleClick = async () => {
+    // Check if user is authenticated
+    if (!user) {
+      alert("Please login to make a reservation");
+      navigate("/login");
+      return;
+    }
+
+    try {
     // First mark rooms as unavailable
     await Promise.all(
       selectedRooms.map((roomId) => {
-        return axios.put(`${API_BASE_URL}/rooms/availability/${roomId}`, {
+        return axiosInstance.put(`/rooms/availability/${roomId}`, {
           dates: alldates,
-        }, { withCredentials: true });
+        });
       })
     );
 
@@ -109,9 +115,7 @@ const [selectedExtras, setSelectedExtras] = useState([]);
           guests: options.adult + options.children
         };
 
-        return await axios.post(`${API_BASE_URL}/reservations`, reservationData, {
-          withCredentials: true
-        });
+        return await axiosInstance.post('/reservations', reservationData);
       })
     );
 
