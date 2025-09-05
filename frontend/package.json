@@ -1,6 +1,6 @@
 {
   "name": "booking",
-  "proxy": "http://localhost:8800/api",
+  "proxy": "syriabooking.railway.internal",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
