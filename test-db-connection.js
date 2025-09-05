@@ -11,7 +11,7 @@ const testConnection = async () => {
       return;
     }
     
-    await mongoose.connect(process.env.MONGO + 'syriabooking?retryWrites=true&w=majority');
+    await mongoose.connect(process.env.MONGO + 'test?retryWrites=true&w=majority');
     console.log('✅ Successfully connected to MongoDB!');
     
     // Test if we can access the hotels collection
