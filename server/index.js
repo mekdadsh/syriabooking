@@ -17,21 +17,21 @@ const connect = async () => {
   try {
     console.log("Attempting to connect to MongoDB...");
     console.log("MONGO URL:", process.env.MONGO ? "Set" : "Not set");
+    if (!process.env.MONGO) {
+      console.error("MONGO environment variable is not set");
+      throw new Error("MONGO environment variable is required");
+    }
     await mongoose.connect(process.env.MONGO + 'syriabooking?retryWrites=true&w=majority');
     console.log("Connected to mongoDB.");
   } catch (error) {
     console.error("MongoDB connection error:", error);
-    throw error;
+    // Don't throw error, let the server start without DB for now
+    console.log("Server will start without database connection");
   }
 };
 
 mongoose.connection.on("disconnected", () => {
   console.log("mongoDB disconnected!");
-});
-
-// Test endpoint
-app.get("/", (req, res) => {
-  res.json({ message: "Syria Booking API is running!", status: "success" });
 });
 
 //middlewares
@@ -42,10 +42,16 @@ app.use(cors({
 app.use(cookieParser())
 app.use(express.json());
 
+// Test endpoint
+app.get("/", (req, res) => {
+  res.json({ message: "Syria Booking API is running!", status: "success" });
+});
+
 app.use("/api/auth", authRoute);
 app.use("/api/users", usersRoute);
 app.use("/api/hotels", hotelsRoute);
 app.use("/api/rooms", roomsRoute);
+app.use("/api/reservations", reservationRoutes);
 
 app.use((err, req, res, next) => {
   const errorStatus = err.status || 500;
@@ -56,13 +62,7 @@ app.use((err, req, res, next) => {
     message: errorMessage,
     stack: err.stack,
   });
-});
-app.use(cors({
-  origin: ['https://bookingsy-a0ecb.web.app', 'http://localhost:3000'],
-  credentials: true
-}));
-
-app.use("/api/reservations", reservationRoutes); 
+}); 
 const PORT = process.env.PORT || 8800;
 app.listen(PORT, () => {
   connect();
