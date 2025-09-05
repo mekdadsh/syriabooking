@@ -35,7 +35,10 @@ app.get("/", (req, res) => {
 });
 
 //middlewares
-app.use(cors())
+app.use(cors({
+  origin: ["https://bookingsy-a0ecb.web.app", "http://localhost:3000"],
+  credentials: true
+}))
 app.use(cookieParser())
 app.use(express.json());
 
