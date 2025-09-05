@@ -17,14 +17,23 @@ const connect = async () => {
   try {
     console.log("Attempting to connect to MongoDB...");
     console.log("MONGO URL:", process.env.MONGO ? "Set" : "Not set");
+    console.log("Full MONGO URL:", process.env.MONGO ? process.env.MONGO + 'syriabooking?retryWrites=true&w=majority' : "Not set");
+    
     if (!process.env.MONGO) {
       console.error("MONGO environment variable is not set");
       throw new Error("MONGO environment variable is required");
     }
+    
     await mongoose.connect(process.env.MONGO + 'syriabooking?retryWrites=true&w=majority');
-    console.log("Connected to mongoDB.");
+    console.log("✅ Connected to MongoDB successfully!");
+    
+    // Test database access
+    const Hotel = mongoose.model('Hotel', new mongoose.Schema({}, { strict: false }));
+    const hotelCount = await Hotel.countDocuments();
+    console.log(`📊 Found ${hotelCount} hotels in the database`);
+    
   } catch (error) {
-    console.error("MongoDB connection error:", error);
+    console.error("❌ MongoDB connection error:", error);
     // Don't throw error, let the server start without DB for now
     console.log("Server will start without database connection");
   }
