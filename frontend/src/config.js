@@ -1,6 +1,6 @@
 // API Configuration
 const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? 'https://YOUR_RENDER_URL.onrender.com/api' // Replace with your actual Render URL
+  ? 'https://syriabooking.onrender.com/api'
   : 'http://localhost:8800/api';
 
 export default API_BASE_URL;
