@@ -1,12 +1,12 @@
 const express = require("express");
 const Reservation = require("../models/Reservation.js");
-const { verifyUser } = require("../utils/verifyToken.js");
+const { verifyToken, verifyUser } = require("../utils/verifyToken.js");
 const User = require("../models/User.js");
 // Initialize the router
 const router = express.Router();
 
 // CREATE RESERVATION
-router.post("/", verifyUser, async (req, res) => {
+router.post("/", verifyToken, async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
     if (!user) {
@@ -29,8 +29,13 @@ router.post("/", verifyUser, async (req, res) => {
   }
 });
 // GET USER RESERVATIONS
-router.get("/:userId", verifyUser, async (req, res) => {
+router.get("/:userId", verifyToken, async (req, res) => {
   try {
+    // Check if user is requesting their own reservations or is admin
+    if (req.user.id !== req.params.userId && !req.user.isAdmin) {
+      return res.status(403).json({ message: "You are not authorized to view these reservations" });
+    }
+    
     const reservations = await Reservation.find({ user: req.params.userId })
       .populate("hotel")
       .populate("room");
@@ -39,31 +44,20 @@ router.get("/:userId", verifyUser, async (req, res) => {
     res.status(500).json(err);
   }
 });
-router.post("/", verifyUser, async (req, res) => {
-  try {
-    // Get user details from the authenticated user
-    const user = await User.findById(req.user.id);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    const reservationData = {
-      ...req.body,
-      userName: user.username,  // Add username
-      userEmail: user.email    // Add email
-    };
-
-    const newReservation = new Reservation(reservationData);
-    const savedReservation = await newReservation.save();
-    res.status(201).json(savedReservation);
-  } catch (err) {
-    res.status(500).json(err);
-  }
-});
 
 // UPDATE RESERVATION
-router.put("/:id", verifyUser, async (req, res) => {
+router.put("/:id", verifyToken, async (req, res) => {
   try {
+    const reservation = await Reservation.findById(req.params.id);
+    if (!reservation) {
+      return res.status(404).json({ message: "Reservation not found" });
+    }
+    
+    // Check if user owns the reservation or is admin
+    if (reservation.user.toString() !== req.user.id && !req.user.isAdmin) {
+      return res.status(403).json({ message: "You are not authorized to update this reservation" });
+    }
+    
     const updatedReservation = await Reservation.findByIdAndUpdate(
       req.params.id,
       { $set: req.body },
@@ -76,15 +70,20 @@ router.put("/:id", verifyUser, async (req, res) => {
 });
 
 // DELETE RESERVATION
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", verifyToken, async (req, res) => {
   try {
     const reservation = await Reservation.findById(req.params.id);
     if (!reservation) {
-      return res.status(404).json("Reservation not found");
+      return res.status(404).json({ message: "Reservation not found" });
+    }
+    
+    // Check if user owns the reservation or is admin
+    if (reservation.user.toString() !== req.user.id && !req.user.isAdmin) {
+      return res.status(403).json({ message: "You are not authorized to delete this reservation" });
     }
 
     await Reservation.findByIdAndDelete(req.params.id);
-    res.status(200).json("Reservation cancelled successfully");
+    res.status(200).json({ message: "Reservation cancelled successfully" });
   } catch (err) {
     res.status(500).json(err);
   }

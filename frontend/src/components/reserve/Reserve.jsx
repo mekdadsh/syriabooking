@@ -87,6 +87,10 @@ const [selectedExtras, setSelectedExtras] = useState([]);
           item.roomNumbers.some((number) => number._id === roomId)
         );
         
+        if (!room) {
+          throw new Error(`Room with ID ${roomId} not found`);
+        }
+        
         const extraTotal = selectedExtras.reduce((sum, item) => sum + item.price, 0);
 
         const reservationData = {
