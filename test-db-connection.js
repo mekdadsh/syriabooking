@@ -15,7 +15,12 @@ const testConnection = async () => {
     console.log('✅ Successfully connected to MongoDB!');
     
     // Test if we can access the hotels collection
-    const Hotel = mongoose.model('Hotel', new mongoose.Schema({}, { strict: false }));
+    let Hotel;
+    try {
+      Hotel = mongoose.model('Hotel');
+    } catch (error) {
+      Hotel = mongoose.model('Hotel', new mongoose.Schema({}, { strict: false }));
+    }
     const hotelCount = await Hotel.countDocuments();
     console.log(`📊 Found ${hotelCount} hotels in the database`);
     

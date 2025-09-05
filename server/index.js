@@ -27,11 +27,6 @@ const connect = async () => {
     await mongoose.connect(process.env.MONGO + 'test?retryWrites=true&w=majority');
     console.log("✅ Connected to MongoDB successfully!");
     
-    // Test database access
-    const Hotel = mongoose.model('Hotel', new mongoose.Schema({}, { strict: false }));
-    const hotelCount = await Hotel.countDocuments();
-    console.log(`📊 Found ${hotelCount} hotels in the database`);
-    
   } catch (error) {
     console.error("❌ MongoDB connection error:", error);
     // Don't throw error, let the server start without DB for now
