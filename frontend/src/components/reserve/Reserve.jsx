@@ -23,7 +23,7 @@ const [selectedExtras, setSelectedExtras] = useState([]);
   const { data, loading, error } = useFetch(`/hotels/room/${hotelId}`);
   const { dates, options } = useContext(SearchContext);
   const { user } = useContext(AuthContext); // ✅ TOP LEVEL only
-  const totalGuests = options.adults || 0 + options.children || 0;
+  const totalGuests = (options.adult || 0) + (options.children || 0);
 
   const navigate = useNavigate();
    const handleExtraChange = (e) => {
@@ -113,7 +113,7 @@ const [selectedExtras, setSelectedExtras] = useState([]);
           paymentStatus: "pending",
           extras: selectedExtras,
           extraTotalPrice: extraTotal,
-          guests: options.adult + options.children
+          guests: (options.adult || 0) + (options.children || 0)
         };
 
         return await axios.post(`${API_BASE_URL}/reservations`, reservationData, {

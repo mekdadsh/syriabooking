@@ -1,6 +1,6 @@
-const User = require("../models/User");
+const User = require("../models/User.js");
 const bcrypt = require("bcryptjs");
-const { createError } = require("../utils/error");
+const { createError } = require("../utils/error.js");
 const jwt = require("jsonwebtoken");
 
 const register = async (req, res, next) => {
@@ -40,6 +40,9 @@ const login = async (req, res, next) => {
     res
       .cookie("access_token", token, {
         httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'none',
+        maxAge: 24 * 60 * 60 * 1000 // 24 hours
       })
       .status(200)
       .json({ details: { ...otherDetails }, isAdmin });

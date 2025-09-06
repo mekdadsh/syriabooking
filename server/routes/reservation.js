@@ -8,6 +8,12 @@ const router = express.Router();
 // CREATE RESERVATION
 router.post("/", verifyToken, async (req, res) => {
   try {
+    // Check if req.user exists and has id
+    if (!req.user || !req.user.id) {
+      console.error("User not authenticated or missing user ID");
+      return res.status(401).json({ message: "User not authenticated" });
+    }
+
     const user = await User.findById(req.user.id);
     if (!user) {
       return res.status(404).json({ message: "User not found" });

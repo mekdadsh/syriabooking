@@ -31,7 +31,9 @@ const Register = () => {
     e.preventDefault();
     dispatch({ type: "REGISTER_START" });
     try {
-      const res = await axios.post(`${API_BASE_URL}/auth/register`, credentials);
+      const res = await axios.post(`${API_BASE_URL}/auth/register`, credentials, {
+        withCredentials: true
+      });
       dispatch({ type: "REGISTER_SUCCESS", payload: res.data.details });
       navigate("/");
     } catch (err) {
