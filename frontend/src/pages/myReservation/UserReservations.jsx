@@ -17,7 +17,7 @@ const ReservationPage = () => {
     loading,
     error,
     reFetch,
-  } = useFetch(user ? `${API_BASE_URL}/reservations/${user._id}` : null);
+  } = useFetch(user ? `/reservations/${user._id}` : null);
   
  const handleCancel = async (reservationId) => {
   try {
